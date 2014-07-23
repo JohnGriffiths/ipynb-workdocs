@@ -92,6 +92,17 @@ and slides. But the system allows for specific additions or exclusions for each
 of these.
 
 
+## Setup:
+
+*Cell tags*
+
+Follow the instructions in the cherry-picker repo to set up a set of 'ipynb-workdocs' tags, including: *rough_notes*, *pdf_only*, *html_only*, *slides_only*, *omit_pdf*, *omit_html*, *omit_slides*. 
+
+
+Make sure that the notebook_cherry_picker submodule in this repo is checked out on the 'ipynb-workdocs' branch (sometimes this doesn't seem to be the case by default). 
+
+
+
 
 
 ## Examples:
@@ -103,5 +114,6 @@ Example 1 - nbconvert calls from master notebook cells
 Example 2 - nbconvert widget (planned)
 
 Example 3 - nbconvert pure python (planned)
+
 
 
