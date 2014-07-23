@@ -3,7 +3,6 @@
 
 A simple system for reproducible research documentation.
 
-----
 
 ## What's this then? 
 
@@ -52,7 +51,6 @@ Again, these all come pretty easily from IPython tools that are becoming pretty
 standard. I'm just providing templates and extra functions so that I one can sit
 down and crack these out a rapid pace.
 
----
 
 ## Enough talk. How does it work?
 
@@ -94,15 +92,6 @@ and slides. But the system allows for specific additions or exclusions for each
 of these.
 
 
-The repo provides template notebooks for a few different use cases - one-off
-report, rolling documentation ('rolldoc'), quick notes, tutorials, general
-notes, academic papers, dissertations, etc.
-
-
-Each template has an nbconvert section at the end containing the code necesssary
-to achieve all this.
-
-----
 
 
 ## Examples:
