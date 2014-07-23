@@ -74,7 +74,7 @@ picker' repo.
 
 
 
-![png](about_ipynb_workdocs_files/about_ipynb_workdocs_8_0.png)
+![png](misc/readme_graph.png)
 
 
 
