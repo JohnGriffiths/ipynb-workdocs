@@ -1,0 +1,3 @@
+[submodule "notebook_cherry_picker"]
+	path = notebook_cherry_picker
+	url = git@github.com:JohnGriffiths/notebook_cherry_picker.git
