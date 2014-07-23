@@ -1,0 +1,67 @@
+
+((= This line inherits from the built in template that you want to use. =))
+((* extends 'article.tplx' *))
+
+((* block date *))
+\date{\today}
+%\date{}
+((* endblock date *))
+
+%((* block author *))
+%\author{DOC_AUTHOR}
+%((* endblock author *))
+
+((* block title *))
+\title{DOC_TITLE}
+((* endblock title *))
+
+((* block packages *))
+((( super() )))
+\usepackage[round]{natbib}
+%\usepackage[doublespacing]{setspace}
+\usepackage{parskip}
+%\usepackage{setcounter}
+((* endblock packages *))
+
+((* block commands *))
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true, % so long urls are correctly broken across lines
+      hidelinks
+      }
+    % Slightly bigger margins than the latex defaults
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    %\parskip=2\baselineskip \advance\parskip by 0pt plus 20pt
+    \setlength{\parskip}{0pt} % 1ex plus 0.5ex minus 0.2ex}
+    \setlength{\parindent}{0pt}
+
+    % remove section numberings but keep in toc 
+    % (http://tex.stackexchange.com/questions/30122/generate-table-of-contents-when-section-sections-without-numbering-has-been)
+    \setcounter{secnumdepth}{-2} 
+    
+((* endblock commands *))
+
+%((* block bibliography *))
+%\bibliographystyle{apalike}
+%\bibliography{Thesis}
+%((* endblock bibliography *))
+
+%% Disable input cells
+((* block input_group *))
+((* endblock input_group *))
+
+((= This line selects the cell style. =))
+((* set cell_style = 'style_bw_python.tplx' *))
+
+% Define block headings
+% Note: latex will only number headings that aren't starred 
+% (i.e. \subsection , but not \subsection* )
+
+((* block h1 -*))\section((* endblock h1 -*))
+((* block h2 -*))\subsection((* endblock h2 -*))
+((* block h3 -*))\subsubsection((* endblock h3 -*))
+((* block h4 -*))\paragraph((* endblock h4 -*))
+((* block h5 -*))\subparagraph((* endblock h5 -*))
