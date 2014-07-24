@@ -10,22 +10,10 @@ from datetime import datetime
 today = str(datetime.now()).split(' ')[0]
 today
 
-# Get folder locations
-import os
-cwd = os.getcwd()
-outdir = cwd + '/outputs'
-!rm -r $outdir
-!mkdir $outdir
-ipynb_wd_loc = cwd.split('/examples')[0]
-cherry_picker_loc = ipynb_wd_loc + '/notebook_cherry_picker'
-
 
 # Specify some filenames
 nb_pfx = 'example1'
 master_nb = '%s__master_nb.ipynb' %nb_pfx
-
-cherrypick_template =  'ipython nbconvert %s --CherryPickingPreprocessor.expression="%s" '\
-             '--config %s' 
 
 cherrypick_class_file = 'ipynb_wd_cherry_picking_preprocessor.py'
 config_file = 'ipynb_wd_ipython_nbconvert_config.py'
@@ -43,6 +31,26 @@ slides_nb = '%s__slides_nb__%s.ipynb' %(nb_pfx, today)
 html_file = '%s__html__%s.html' %(nb_pfx, today) 
 pdf_file = '%s__pdf__%s.pdf' %(nb_pfx, today)
 slides_file = '%s__slides__%s.slides.html' %(nb_pfx, today)
+
+
+# Get folder locations
+import os
+cwd = os.getcwd()
+outdir = cwd + '/%s__workdocs__%s' %(nb_pfx,today)
+!rm -r $outdir
+!mkdir $outdir
+ipynb_wd_loc = cwd.split('/examples')[0]
+cherry_picker_loc = ipynb_wd_loc + '/notebook_cherry_picker'
+
+
+
+
+cherrypick_template =  'ipython nbconvert %s --CherryPickingPreprocessor.expression="%s" '\
+             '--config %s' 
+
+
+
+    
 
 
 # Got to outdir and run stuff
