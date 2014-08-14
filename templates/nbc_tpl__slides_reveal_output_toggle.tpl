@@ -20,6 +20,9 @@
   display: none;
 //  margin-top: 5px;
 }
+div.prompt {
+display: none;
+}
 </style>
 
 <script>
