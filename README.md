@@ -111,9 +111,11 @@ Make sure that the notebook_cherry_picker submodule in this repo is checked out 
 
 Example 1 - nbconvert calls from master notebook cells 
 
-Example 2 - nbconvert widget (planned)
+Example 2 - nbconvert function call from ipynb wd utils  
 
-Example 3 - nbconvert pure python (planned)
+Example 3 - nbconvert widget (planned)
+
+Example 4 - nbconvert pure python (planned)
 
 
 
