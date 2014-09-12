@@ -1,0 +1,7 @@
+
+# compile python files
+.pyc
+
+# ipython notebook checkpoints
+.ipynb_checkpoints
+
