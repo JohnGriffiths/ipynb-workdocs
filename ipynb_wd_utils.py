@@ -75,7 +75,9 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = ''):
   outdir = cwd + '/%s__workdocs__%s' %(nb_pfx,today)
   mgc('system rm -r $outdir')
   mgc('system mkdir $outdir')
-  ipynb_wd_loc = '/media/sf_SharedFolder/Code/git_repos_of_mine/ipynb-workdocs' #cwd.split('/examples')[0]
+  import ipynb_wd_utils as iwu
+  ipynb_wd_loc = '/'.join(iwu.__file__.split('/')[0:-1])
+  #ipynb_wd_loc = '/media/sf_SharedFolder/Code/git_repos_of_mine/ipynb-workdocs' #cwd.split('/examples')[0]
   cherry_picker_loc = ipynb_wd_loc + '/notebook_cherry_picker'
 
 
