@@ -9,7 +9,7 @@ from IPython import get_ipython
 mgc = get_ipython().magic
 
 
-def run_nbconvert(nb_pfx,doc_title = '', doc_author = ''):
+def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None):
 
   # ipynb-workdocs nbconvert:
   # =========================
@@ -219,22 +219,73 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = ''):
   print '\nrenaming output:\n\n%s\n\n\n%s' %(mv_cmd,'\n'.join(res))
 
 
-
+  
 
   # Make pdf file
 
-  nbc_cmd = 'ipython nbconvert --to latex --post PDF --template %s %s' %(nbc2pdf_template, pdf_nb)
-  mv_cmd = 'mv %s %s' %(pdf_nb.replace('.ipynb', '.pdf'), pdf_file)
+  # If no changes to texfile are required, just use
+  # 'nbconvert --to latex --post PDF'...
+
+  # If changes to texfile are required, use 
+  # 'nbconvert --to latex'... 
+  # 'tidy_texfile()'...
+  # 'pdflatex'...
 
   print '\nMaking pdf file...' 
 
-  #res = %system $nbc_cmd
-  res = mgc('system $nbc_cmd')
-  print '\nrunning nbconvert:\n\n%s\n\nresult:\n\n%s' %(nbc_cmd,'\n'.join(res))
+  if tex_changes is None:
 
-  # res = %system $mv_cmd
-  res = mgc('system $mv_cmd')
-  print '\nrenaming output:\n\n%s\n\n\n%s' %(mv_cmd,'\n'.join(res))
+    nbc_cmd = 'ipython nbconvert --to latex --post PDF --template %s %s' %(nbc2pdf_template, pdf_nb)
+
+    #res = %system $nbc_cmd
+    res = mgc('system $nbc_cmd')
+    print '\nrunning nbconvert:\n\n%s\n\nresult:\n\n%s' %(nbc_cmd,'\n'.join(res))
+
+    # Rename output
+    mv_cmd = 'mv %s %s' %(pdf_nb.replace('.ipynb', '.pdf'), pdf_file)
+    # res = %system $mv_cmd
+    res = mgc('system $mv_cmd')
+    print '\nrenaming output:\n\n%s\n\n\n%s' %(mv_cmd,'\n'.join(res))
+
+
+  else:
+
+    # Nbconvert to latex
+    nbc_cmd = 'ipython nbconvert --to latex --template %s %s' %(nbc2pdf_template,pdf_nb)
+    print '\nMaking tex file...'
+    res = mgc('system $nbc_cmd')
+    print '\nrunning nbconvert:\n\n%s\n\nresult:\n\n%s' %(nbc_cmd,'\n'.join(res))
+
+    # Tidy texfile
+    orig_texfile = pdf_nb.split('.ipynb')[0]+'.tex'
+    new_texfile = pdf_nb.split('.ipynb')[0]+'_tidied.tex'
+    tidy_texfile(orig_texfile,
+                  tex_changes=tex_changes,
+                  new_texfile = new_texfile)
+
+
+
+    # Run pdflatex
+    print 'running pdflatex'
+
+    _cmd = 'pdflatex -interaction=nonstopmode %s' %new_texfile
+   
+    res1 = mgc('system $_cmd') 
+    print '\nrunning pdflatex:\n\n%s\n\nresult:\n\n%s' %(_cmd,'\n'.join(res1))
+
+    res2 = mgc('system $_cmd')
+    print '\nrunning pdflatex:\n\n%s\n\nresult:\n\n%s' %(_cmd,'\n'.join(res1))
+
+    res3 = mgc('system $_cmd')  
+    print '\nrunning pdflatex:\n\n%s\n\nresult:\n\n%s' %(_cmd,'\n'.join(res3))
+
+
+    # Rename to the name of pdf_nb
+    mv_cmd = 'mv ' + new_texfile.split('.tex')[0]+'.ipynb' + ' ' + pdf_file
+    res = mgc('system $mv_cmd') 
+    print '\nrenaming output:\n\n%s\n\nresult:\n\n%s' %(_cmd,'\n'.join(res3))
+
+  
 
 
 
@@ -258,6 +309,60 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = ''):
   os.chdir(cwd)
 
   print '\n\n\n\nDone! :) \n\n'
+
+
+
+
+def tidy_texfile(texfile, tex_changes, new_texfile=None):
+  """
+  Do some simple parsing and modifying of a texfile
+  Helps iron out some of the wrinkles of the nbconvert-latex-pdf 
+  conversion.
+
+  'tex_changes' is a dictionary containing one or both of 
+  'addstrs' and 'replacestrs'
+
+  'addstrs' is a list of strings to append to the beginning of the file. 
+
+  'replacestrs' is a list of 2 item lists, each item being the 
+  text string to be replaced, and the new string to replace it with. 
+  Strings to be removed are simply replaced with ''. 
+
+
+  Example:
+  --------
+
+  # strings to remove
+  replacestrs = [ [r'% Add a bibliography block to the postdoc', '' ],
+                  [r'\bibliographystyle{apalike}', ''],
+                  [r'\bibliography{Thesis}', '' ],
+                  [r'\end{document}', ''],
+                  [r'{ \hspace*{\fill} \\}', ''],
+                  [r'max size={0.9\linewidth}{0.9\paperheight}',
+                   r'max size={0.99\linewidth}{0.99\paperheight}'],
+                  [r'\end{tabular}', r'\end{tabular} \\ \vspace{10 mm}'],
+                  ['Chapters_1_2_3_4_5_6_7_files', 'Figures']             ]
+ 
+  tex_changes = {'replacestrs': replacestrs}
+  tidy_texfile('texfile.tex',
+               tex_changes = tex_changes
+               newtexfile='newtexfile.tex')
+
+
+  """
+
+  thetex = open(texfile, 'r').read()
+    
+  # Add strings
+  if 'addstrs' in tex_changes:
+    alladdstrs = [a + '\n' for a in tex_changes['addstrs']]
+    thetex = alladdstrs + thetex
+
+  # Replace strings
+  if 'replacestrs' in tex_changes:
+    for r in tex_changes['replacestrs']: thetex = thetex.replace(r[0],r[1])
+   
+  open(new_texfile,'w').writelines(thetex)
 
 
 
