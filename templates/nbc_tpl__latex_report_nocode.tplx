@@ -18,8 +18,9 @@
 ((* block packages *))
 ((( super() )))
 \usepackage[round]{natbib}
-%\usepackage[doublespacing]{setspace}
+\usepackage[doublespacing]{setspace}
 \usepackage{parskip}
+\usepackage{inputenc}
 ((* endblock packages *))
 
 ((* block commands *))
