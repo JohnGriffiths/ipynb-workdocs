@@ -9,7 +9,7 @@ from IPython import get_ipython
 mgc = get_ipython().magic
 
 
-def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None):
+def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None, ipynb_wd_version='0.1'):
 
   # ipynb-workdocs nbconvert:
   # =========================
@@ -140,7 +140,11 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None):
 
   # Make mother notebook (remove rough notes)
 
-  thisexpr = "not rough_notes"
+  if ipynb_wd_version=='0.1': 
+    thisexpr = "not rough_notes"
+  elif ipynb_wd_version=='0.2':
+    thisexpr = '(not pdf) or (not html) or (not slides)'
+  
   in_nb = master_nb
   out_nb = mother_nb
 
@@ -160,7 +164,11 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None):
 
   # Make html notebook (remove rough notes)
 
-  thisexpr = "(not omit_html) or html_only"
+  if ipynb_wd_version=='0.1': 
+    thisexpr = "(not omit_html) or html_only"
+  elif ipynb_wd_version=='0.2':
+    thisexpr = 'html'
+
   in_nb = mother_nb
   out_nb = html_nb
 
@@ -180,7 +188,11 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None):
 
   # Make slides notebook (remove rough notes)
 
-  thisexpr = "(not omit_slides) or slides_only"
+  if ipynb_wd_version=='0.1': 
+    thisexpr = "(not omit_slides) or slides_only"
+  elif ipynb_wd_version=='0.2':
+    thisexpr = "slides"
+
   in_nb = mother_nb
   out_nb = slides_nb
 
@@ -200,8 +212,11 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None):
 
 
   # Make pdf notebook (remove rough notes)
+  if ipynb_wd_version=='0.1': 
+    thisexpr = "(not omit_pdf) or pdf_only"
+  elif ipynb_wd_version=='0.2':
+    thisexpr = "pdf"
 
-  thisexpr = "(not omit_pdf) or pdf_only"
   in_nb = mother_nb
   out_nb = pdf_nb
 
