@@ -215,7 +215,7 @@ def run_nbconvert(nb_pfx,doc_title = '', doc_author = '',tex_changes=None, ipynb
   if ipynb_wd_version=='0.1': 
     thisexpr = "(not omit_pdf) or pdf_only"
   elif ipynb_wd_version=='0.2':
-    thisexpr = "pdf"
+    thisexpr = "not (not pdf)"
 
   in_nb = mother_nb
   out_nb = pdf_nb
