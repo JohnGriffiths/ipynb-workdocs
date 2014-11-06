@@ -62,7 +62,7 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
       # (just for html) 
       iwu.run_nbconvert(n,do_pdf_nb=False,do_pdf_file=False,
                           do_slides_nb=False,do_slides_file=False,
-                          remove_additional_files=True,ipynb_wd_version='0.2')
+                          remove_additional_files=False,ipynb_wd_version='0.2')
        
       # Add to the concatenate list
       cat_cmd += ' %s__master_nb.ipynb' %n    
@@ -89,8 +89,8 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
   master_nb = '%s__master_nb.ipynb' %nb_pfx # already exists
   mother_nb = '%s__mother_nb__%s.ipynb' %(nb_pfx, today) # doesn't yet exist
 
-  cherrypick_class_file = 'ipynb_wd_cherry_picking_preprocessor.py'
-  config_file = 'ipynb_wd_ipython_nbconvert_config.py'
+  cherrypick_class_file = 'ipynb_wd_cherry_picking_preprocessor_3.py'
+  config_file = 'ipynb_wd_ipython_nbconvert_config_3.py'
   copy_writer_file = 'notebook_copy_writer.py'
 
 
@@ -124,8 +124,11 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
   if ipynb_wd_version=='0.1': 
     thisexpr = "not rough_notes"
   elif ipynb_wd_version=='0.2':
-    thisexpr = '(not pdf) or (not html) or (not slides)'
-  
+    #thisexpr = '(not pdf) or (not html) or (not slides)'
+    #thisexpr = 'pdf or html or slides'
+    #thisexpr = 'not (not pdf) or not (not html) or not (not slides)'
+    thisexpr = 'pdf or html or slides'
+
   in_nb = master_nb
   out_nb = mother_nb
 
