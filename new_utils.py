@@ -39,11 +39,11 @@ class cloudfiles_nb(object):
     newfile = '%s/%s' %(self.thisfolder,filename)
     
     # if filename alread exists, delate and replace
-    filecheck = self.client.search(self.thisfolder, filename)
-    if filecheck: del_res = self.client.file_delete(newfile)
+    #filecheck = self.client.search(self.thisfolder, filename)
+    #if filecheck: del_res = self.client.file_delete(newfile)
         
-    res = self.client.put_file(newfile, f)
-    
+    res = self.client.put_file(newfile, f, overwrite=True)
+ 
     return res
 
 
@@ -85,8 +85,14 @@ class nb_fig(object):
   # in rather scrappy ways. 
   def _repr_latex_(self):
     ltx_str = r'\begin{figure}[htbp!] \centering \vspace{20pt} \begin{center} \
-                \includegraphics[width=1.0\textwidth]{%s} \
+                \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{%s} \
                 \end{center}{ \hspace*{\fill} \\} \caption[%s]{%s} \label{fig:%s} \
                 \end{figure} \newpage' %(self.local_file,self.label,self.cap,self.label)
+    #ltx_str = r'\begin{figure}[htbp!] \centering \vspace{20pt} \begin{center} \
+    #             \noindent\makebox[\textwidth]{\includegraphics[width=1\textwidth]{%s}} \
+    #             \end{center}{ \hspace*{\fill} \\} \caption[%s]{%s} \label{fig:%s} \
+    #             \end{figure} \newpage' %(self.local_file,self.label,self.cap,self.label)
+
+
     return ltx_str 
     
