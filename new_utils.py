@@ -58,12 +58,13 @@ class cloudfiles_nb(object):
 
 class nb_fig(object):
     
-  def __init__(self, local_file,label,cap,fignum,dropbox_obj,upload_file=True,size=(500,400)):
+  def __init__(self, local_file,label,cap,fignum,dropbox_obj,upload_file=True,size=(500,400),filetype='image'):
     self.local_file = local_file
     self.size = size
     self.cap = cap
     self.label = label
     self.fignum = fignum
+    self.filetype=filetype
 
     if upload_file:
       res1 = dropbox_obj.upload_file(local_file)
@@ -72,26 +73,52 @@ class nb_fig(object):
     self.cloud_file = res2['url']
     
   def _repr_html_(self):
-    html_str = '<center><img src="%s" alt="Just in case" \
-                title="Figure %s. %s. %s" height="%spx" width="%spx" />\
-                Figure %s. %s. %s </center>' %(self.cloud_file,
-                                               self.fignum, self.cap,self.label,
-                                               self.size[0],self.size[1],
-                                               self.fignum,self.label,self.cap)
+
+    if self.filetype == 'image':
+
+
+      html_str = '<center><img src="%s" alt="Just in case" \
+                  title="Figure %s. %s. %s" height="%spx" width="%spx" />\
+                  Figure %s. %s. %s </center>' %(self.cloud_file,
+                                                 self.fignum, self.cap,self.label,
+                                                 self.size[0],self.size[1],
+                                                 self.fignum,self.label,self.cap)
+    elif self.filetype == 'movie':
+
+        
+      html_str = '<center><iframe \
+                  height="%s" \
+                  width="%s" \
+                  src="%s" \
+                  frameborder="0" \
+                  allowfullscreen \
+                  ></iframe></center> \
+                  <center>Figure %s. %s. %s</center>' %(self.size[0],self.size[1],self.cloud_file,
+                                                        self.fignum, self.cap,self.label)
+                  
+
+
     return html_str
 
   # the 'newpage' here could possibly be replace with something a bit better. 
   # I put it in because otherwise figures seem to break up text and section headings
   # in rather scrappy ways. 
   def _repr_latex_(self):
-    ltx_str = r'\begin{figure}[htbp!] \centering \vspace{20pt} \begin{center} \
-                \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{%s} \
-                \end{center}{ \hspace*{\fill} \\} \caption[%s]{%s} \label{fig:%s} \
-                \end{figure} \newpage' %(self.local_file,self.label,self.cap,self.label)
-    #ltx_str = r'\begin{figure}[htbp!] \centering \vspace{20pt} \begin{center} \
-    #             \noindent\makebox[\textwidth]{\includegraphics[width=1\textwidth]{%s}} \
-    #             \end{center}{ \hspace*{\fill} \\} \caption[%s]{%s} \label{fig:%s} \
-    #             \end{figure} \newpage' %(self.local_file,self.label,self.cap,self.label)
+
+    if self.filetype == 'image':
+
+      ltx_str = r'\begin{figure}[htbp!] \centering \vspace{20pt} \begin{center} \
+                  \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{%s} \
+                  \end{center}{ \hspace*{\fill} \\} \caption[%s]{%s} \label{fig:%s} \
+                  \end{figure} \newpage' %(self.local_file,self.label,self.cap,self.label)
+      #ltx_str = r'\begin{figure}[htbp!] \centering \vspace{20pt} \begin{center} \
+      #             \noindent\makebox[\textwidth]{\includegraphics[width=1\textwidth]{%s}} \
+      #             \end{center}{ \hspace*{\fill} \\} \caption[%s]{%s} \label{fig:%s} \
+      #             \end{figure} \newpage' %(self.local_file,self.label,self.cap,self.label)
+
+    elif self.filetype == 'movie':
+
+      ltx_str = '' # TO DO!
 
 
     return ltx_str 
