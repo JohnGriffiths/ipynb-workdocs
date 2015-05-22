@@ -118,7 +118,11 @@ class nb_fig(object):
 
     elif self.filetype == 'movie':
 
-      ltx_str = '' # TO DO!
+      ltx_str = r'\begin{figure}[htbp!] \centering \vspace{20pt} \begin{center} \
+                  \includemovie[poster,text={\small(Loading Video...)}]{6cm}{4cm}{%s} \
+                  \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{%s} \
+                  \end{center}{ \hspace*{\fill} \\} \caption[%s]{%s} \label{fig:%s} \
+                  \end{figure} \newpage' %(self.local_file,self.label,self.cap,self.label)
 
 
     return ltx_str 
