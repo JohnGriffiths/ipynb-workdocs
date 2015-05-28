@@ -6,7 +6,8 @@ class cloudfiles_nb(object):
 
     from dropbox.client import DropboxClient
     from dropbox.session import DropboxSession    
-  
+ 
+ 
     self.client = DropboxClient(access_token)
     
     self.base_dir = 'workdocs-cloudfiles'        
@@ -57,8 +58,10 @@ class cloudfiles_nb(object):
 
 
 class nb_fig(object):
-    
-  def __init__(self, local_file,label,cap,fignum,dropbox_obj,upload_file=True,size=(500,400),filetype='image'):
+
+
+  
+  def __init__(self, local_file,label,cap,fignum,dropbox_obj,upload_file=True,size=(500,400),filetype='image',iframe_test=True):
     self.local_file = local_file
     self.size = size
     self.cap = cap
@@ -66,11 +69,29 @@ class nb_fig(object):
     self.fignum = fignum
     self.filetype=filetype
 
+
+
+    from IPython.display import IFrame
+
     if upload_file:
       res1 = dropbox_obj.upload_file(local_file)
+
+
     res2 = dropbox_obj.get_file_link(local_file.split('/')[-1])
     
     self.cloud_file = res2['url']
+
+  
+    # this is a hacky solution to an odd bug I have noticed, 
+    # where after uploading an image (seems to be when this is 
+    # repeated a few times), the displayed image is sometimes
+    # not the latest uploaded image. This seems to be resolved 
+    # by creating an IFrame with the dropbox link; so just do 
+    # this here with a temporary one, and then delete immediately 
+    if iframe_test:
+      tmp = IFrame(self.cloud_file,width=500,height=500)
+      del tmp
+	
     
   def _repr_html_(self):
 
