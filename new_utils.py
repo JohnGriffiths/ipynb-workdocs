@@ -77,7 +77,7 @@ class nb_fig(object):
     if self.filetype == 'image':
 
 
-      html_str = '<center><img src="%s" alt="Just in case" \
+      html_str = '<center><img src="%s" alt="broken link" \
                   title="Figure %s. %s. %s" height="%spx" width="%spx" />\
                   Figure %s. %s. %s </center>' %(self.cloud_file,
                                                  self.fignum, self.cap,self.label,
@@ -121,4 +121,55 @@ class nb_fig(object):
 
 
     return ltx_str 
+
+
+
+
+
+# JG Custom dataframe display class                                                     **(init cell)**
+# -----------------------------------
+
+class jg_df(object):
+
+  def __init__(self,s, caption=None, show_index=True, show_columns=True,tablenum=''):
+
+    #self._repr_html_ = s._repr_html_
+    self._show_index = show_index
+    self._show_columns=show_columns
+    self._h = s.to_html(index=show_index,header=show_columns)
+    self._tablenum = tablenum
+
+    def fff(x): return '%1.2f' % x  # Float format function
+    #remove_index=True
+    self._ltx = s.to_latex(float_format=fff, index=show_index, header=show_columns)
+
+    if caption: self.caption=caption
+    elif caption is None: self.caption = 'THIS IS AN EXAMPLE CAPTION'
+
+  def _repr_html_(self):
+    #return self._h
+    return '<center>%s</center> <p> <center> %s </center> .</p>' %(self._h,
+    'Table %s. %s' %(self._tablenum, self.caption)) #.format(self._h)
+
+  def _repr_latex_(self):
+
+    _ltx = self._ltx.replace('\\toprule', '\\hline')\
+                    .replace('\\midrule', '\\hline')\
+                    .replace('\\bottomrule', '\\hline')
+
+    _ltx= u'\\begin{table}[ht] \n '\
+           '\\begin{center} \n '\
+           + _ltx + ' \n '\
+            '\caption{'+self.caption+'} \n'\
+            '\\end{center} \n '\
+            '\\end{table}[ht]'
+    return _ltx
+
+  @property
+  def latex(self):
+    return Latex(self._repr_latex_())
+
+
+
+
     
