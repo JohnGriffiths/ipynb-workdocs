@@ -2,66 +2,138 @@
 
 class cloudfiles_nb(object):
     
-  def __init__(self,access_token):#app_key,app_secret)
+  def __init__(self,api_type,keys):
 
-    from dropbox.client import DropboxClient
-    from dropbox.session import DropboxSession    
- 
- 
-    self.client = DropboxClient(access_token)
+    self.api_type = api_type
     
-    self.base_dir = 'workdocs-cloudfiles'        
-    self.folders_list = [p['path'].replace('/%s/' %self.base_dir, '')\
-                         for p in self.client.metadata(self.base_dir)['contents']]
-    self.upload_file_res = {}
+    
+    if api_type == 'aws': 
+    
+      from boto.s3.connection import S3Connection
+        
+      aws_key,aws_secret = keys 
+      self.conn = S3Connection(aws_key, aws_secret)
+        
+        
+        
+    elif api_type == 'dropbox':
+        
+      from dropbox.client import DropboxClient
+      from dropbox.session import DropboxSession    
+ 
+      access_token = keys
+        
+      self.uploaded_files = {}
+      self.client = DropboxClient(access_token)
+      self.base_dir = 'workdocs-cloudfiles'        
+      self.folders_list = [p['path'].replace('/%s/' %self.base_dir, '')\
+                           for p in self.client.metadata(self.base_dir)['contents']]
+      self.upload_file_res = {}
+
     
   def initialize_folder(self,folder_name):
     
 
-    self.thisfolder = '%s/%s' %(self.base_dir,folder_name)
-    
-    if folder_name in self.folders_list:
-      print 'folder already exists'
-      res = None
-    else:
-      print 'creating folder'
-      res = self.client.file_create_folder(self.thisfolder)
+    if self.api_type == 'aws':
         
-    # do something for error
+      self.bucket = self.conn.create_bucket(folder_name)
+      self.folder_name = folder_name
+        
     
-    return res
+    elif self.api_type == 'dropbox':
+        
+      self.thisfolder = '%s/%s' %(self.base_dir,folder_name)
+    
+      if folder_name in self.folders_list:
+        print 'folder already exists'
+        res = None
+      else:
+        print 'creating folder'
+        res = self.client.file_create_folder(self.thisfolder)
+        
+      # do something for error
+    
+      return res
 
     
   def upload_file(self,filepath):
         
-    f = open(filepath, 'r')
-    filename = filepath.split('/')[-1]
-
-    newfile = '%s/%s' %(self.thisfolder,filename)
-    
-    # if filename alread exists, delate and replace
-    #filecheck = self.client.search(self.thisfolder, filename)
-    #if filecheck: del_res = self.client.file_delete(newfile)
         
-    res = self.client.put_file(newfile, f, overwrite=True)
+    if self.api_type == 'aws':
+        
+      from boto.s3.key import Key
+        
+      filename = filepath.split('/')[-1]
+    
+      k = Key(self.bucket)
+      k.key = filename
+    
+      k.set_contents_from_filename(filepath)        
+      k.set_acl('public-read')        
+      if '.png' in k.key: k.set_metadata('Contet-Type', 'image/png')
  
-    return res
-
-
-  def get_file_link(self,getfile):
         
-    res = self.client.media('%s/%s' %(self.thisfolder,getfile))
+    elif self.api_type == 'dropbox':
+        
+      f = open(filepath, 'r')
+      filename = filepath.split('/')[-1]
+
+      newfile = '%s/%s' %(self.thisfolder,filename)
     
-    # something for error
+      # if filename alread exists, delate and replace
+      #filecheck = self.client.search(self.thisfolder, filename)
+      #if filecheck: del_res = self.client.file_delete(newfile)
+          
+      res = self.client.put_file(newfile, f, overwrite=True)
+ 
+      return res
+
+        
+
+  def get_file_link(self,filename):
+        
+
+    if self.api_type == 'aws':
+        
+      thiskey = self.bucket.get_key(filename) 
+      res = 'https://%s.s3.amazonaws.com/%s' %(self.bucket.name,filename)   
+      # something for error
     
+      return res
+
+
+    elif self.api_type == 'dropbox':
+        
+      res = self.client.media('%s/%s' %(self.thisfolder,filename))['url']
+      # something for error
+   
+      return res
+
+  def get_nbviewer_link(self,filename):
+
+    file_link = self.get_file_link(filename)
+    nbv_pfx = 'http://nbviewer.ipython.org/urls'
+    res = nbv_pfx + '/' + file_link.replace('https://', '')     
+
     return res
 
+  def get_slideviewer_link(self,filename):
+
+    file_link = self.get_file_link(filename)
+    sv_pfx = 'https://slideviewer.herokuapp.com/urls'
+    res = sv_pfx + '/' + file_link.replace('https://', '')
+  
+    return res
+            
 
 class nb_fig(object):
 
 
   
-  def __init__(self, local_file,label,cap,fignum,dropbox_obj,upload_file=True,size=(500,400),filetype='image',iframe_test=True):
+  def __init__(self, local_file,label,cap,fignum,api_obj,upload_file=True,
+               size=(500,400),filetype='image',iframe_test=True):
+    
+    self.api_obj = api_obj
     self.local_file = local_file
     self.size = size
     self.cap = cap
@@ -70,17 +142,17 @@ class nb_fig(object):
     self.filetype=filetype
 
 
-
     from IPython.display import IFrame
 
     if upload_file:
-      res1 = dropbox_obj.upload_file(local_file)
+      res1 = api_obj.upload_file(local_file)
 
 
-    res2 = dropbox_obj.get_file_link(local_file.split('/')[-1])
+    fname = local_file.split('/')[-1]
+ 
+    res2 = api_obj.get_file_link(fname)
     
-    self.cloud_file = res2['url']
-
+    self.cloud_file = res2
   
     # this is a hacky solution to an odd bug I have noticed, 
     # where after uploading an image (seems to be when this is 
@@ -114,8 +186,9 @@ class nb_fig(object):
                   frameborder="0" \
                   allowfullscreen \
                   ></iframe></center> \
-                  <center>Figure %s. %s. %s</center>' %(self.size[0],self.size[1],self.cloud_file,
-                                                        self.fignum, self.cap,self.label)
+                  <center>Figure %s. %s. %s</center>' %(self.size[0],self.size[1],
+                                                        self.cloud_file,self.fignum,
+                                                        self.cap,self.label)
                   
 
 
@@ -142,12 +215,10 @@ class nb_fig(object):
 
 
     return ltx_str 
+  
+  
 
-
-
-
-
-# JG Custom dataframe display class                                                     **(init cell)**
+# JG Custom dataframe display class                                                  
 # -----------------------------------
 
 class jg_df(object):
