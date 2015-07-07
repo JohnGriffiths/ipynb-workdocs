@@ -188,7 +188,7 @@ class nb_fig(object):
                   ></iframe></center> \
                   <center>Figure %s. %s. %s</center>' %(self.size[0],self.size[1],
                                                         self.cloud_file,self.fignum,
-                                                        self.cap,self.label)
+                                                        self.label,self.cap)
                   
 
 
