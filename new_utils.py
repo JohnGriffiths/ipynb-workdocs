@@ -130,8 +130,8 @@ class nb_fig(object):
 
 
   
-  def __init__(self, local_file,label,cap,fignum,api_obj,upload_file=True,
-               size=(500,400),filetype='image',iframe_test=True):
+  def __init__(self, local_file,label,cap,api_obj,fignum=None,upload_file=True,
+               size=(500,400),filetype='image',iframe_test=True,show_fignum=True):
     
     self.api_obj = api_obj
     self.local_file = local_file
@@ -140,7 +140,12 @@ class nb_fig(object):
     self.label = label
     self.fignum = fignum
     self.filetype=filetype
+    self.show_fignum = show_fignum
 
+
+    if self.show_fignum: fignum_str = 'Figure %s.' %fignum
+    else: fignum_str = ''
+    self.fignum_str = fignum_str
 
     from IPython.display import IFrame
 
@@ -171,11 +176,11 @@ class nb_fig(object):
 
 
       html_str = '<center><img src="%s" alt="broken link" \
-                  title="Figure %s. %s. %s" height="%spx" width="%spx" />\
-                  Figure %s. %s. %s </center>' %(self.cloud_file,
-                                                 self.fignum, self.cap,self.label,
+                  title="%s %s. %s" height="%spx" width="%spx" />\
+                  %s %s. %s </center>' %(self.cloud_file,
+                                                 self.fignum_str,self.cap,self.label,
                                                  self.size[0],self.size[1],
-                                                 self.fignum,self.label,self.cap)
+                                                 self.fignum_str,self.label,self.cap)
     elif self.filetype == 'movie':
 
         
@@ -186,8 +191,8 @@ class nb_fig(object):
                   frameborder="0" \
                   allowfullscreen \
                   ></iframe></center> \
-                  <center>Figure %s. %s. %s</center>' %(self.size[0],self.size[1],
-                                                        self.cloud_file,self.fignum,
+                  <center>%s %s. %s</center>' %(self.size[0],self.size[1],
+                                                        self.cloud_file,self.fignum_str,
                                                         self.label,self.cap)
                   
 
