@@ -89,8 +89,13 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
   master_nb = '%s__master_nb.ipynb' %nb_pfx # already exists
   mother_nb = '%s__mother_nb__%s.ipynb' %(nb_pfx, today) # doesn't yet exist
 
-  cherrypick_class_file = 'ipynb_wd_cherry_picking_preprocessor_3.py'
-  config_file = 'ipynb_wd_ipython_nbconvert_config_3.py'
+  if ipynb_wd_version == '0.2': 
+    cherrypick_class_file = 'ipynb_wd_cherry_picking_preprocessor_3.py'
+    config_file = 'ipynb_wd_ipython_nbconvert_config_3.py'
+  elif ipynb_wd_version == '0.3': 
+    cherrypick_class_file = 'ipynb_wd_cherry_picking_preprocessor_4.py'
+    config_file = 'ipynb_wd_ipython_nbconvert_config_4.py'
+
   copy_writer_file = 'notebook_copy_writer.py'
 
 
@@ -123,7 +128,7 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
 
   if ipynb_wd_version=='0.1': 
     thisexpr = "not rough_notes"
-  elif ipynb_wd_version=='0.2':
+  elif ipynb_wd_version=='0.2' or ipynb_wd_version=='0.3':
     #thisexpr = '(not pdf) or (not html) or (not slides)'
     #thisexpr = 'pdf or html or slides'
     #thisexpr = 'not (not pdf) or not (not html) or not (not slides)'
@@ -151,7 +156,7 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
 
     if ipynb_wd_version=='0.1': 
       thisexpr = "(not omit_html) or html_only"
-    elif ipynb_wd_version=='0.2':
+    elif ipynb_wd_version=='0.2' or ipynb_wd_version=='0.3':
       thisexpr = 'html'
 
     in_nb = mother_nb
@@ -178,7 +183,7 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
 
     if ipynb_wd_version=='0.1': 
       thisexpr = "(not omit_slides) or slides_only"
-    elif ipynb_wd_version=='0.2':
+    elif (ipynb_wd_version=='0.2' or ipynb_wd_version=='0.3'):
       thisexpr = "slides"
 
     in_nb = mother_nb
@@ -204,7 +209,7 @@ def run_nbconvert(nb_pfx,nb_list=None,pdf_title='',pdf_author = '',tex_changes=N
 
     if ipynb_wd_version=='0.1': 
       thisexpr = "(not omit_pdf) or pdf_only"
-    elif ipynb_wd_version=='0.2':
+    elif (ipynb_wd_version=='0.2' or ipynb_wd_version=='0.3'):
       thisexpr = "not (not pdf)"
 
     in_nb = mother_nb
